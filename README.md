@@ -24,6 +24,13 @@ Run tests with:
 npm test
 ```
 
+## Run With Docker
+
+```bash
+docker build -t fixed-window-rate-limiter-api .
+docker run --rm -p 3000:3000 fixed-window-rate-limiter-api
+```
+
 ## Example Request
 
 ```bash
