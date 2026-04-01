@@ -20,6 +20,11 @@ The server starts on `http://localhost:3000`.
 
 Set `REDIS_URL` if Redis is not running on `redis://localhost:6379`.
 
+`limit` and `windowSec` are optional in the request body. If omitted, the API uses:
+
+- `RATE_LIMIT_DEFAULT_LIMIT` defaulting to `5`
+- `RATE_LIMIT_DEFAULT_WINDOW_SEC` defaulting to `60`
+
 Run tests with:
 
 ```bash
@@ -52,6 +57,16 @@ curl -X POST http://localhost:3000/check \
     "key": "user:123",
     "limit": 5,
     "windowSec": 60
+  }'
+```
+
+You can also omit the optional fields:
+
+```bash
+curl -X POST http://localhost:3000/check \
+  -H "Content-Type: application/json" \
+  -d '{
+    "key": "user:123"
   }'
 ```
 

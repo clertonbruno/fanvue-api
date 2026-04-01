@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { createApp } from "../src/app";
 import { RateLimitRequest } from "../src/domain/rateLimit";
 import { InMemoryCounterRepository } from "../src/repositories/inMemoryCounterRepository";
+import { rateLimitDefaults } from "../src/schemas/rateLimitSchemas";
 import { RateLimiterService } from "../src/services/rateLimiterService";
 
 const baseRequest: RateLimitRequest = {
@@ -107,6 +108,27 @@ describe("POST /check", () => {
       remaining: 4,
       retryAfterSec: 60,
       resetAt: "2026-04-01T18:21:00.000Z"
+    });
+  });
+
+  it("uses environment-backed defaults when limit and windowSec are omitted", async () => {
+    const nowMs = Date.parse("2026-04-01T18:20:00.000Z");
+    const app = createApp(
+      new RateLimiterService(new InMemoryCounterRepository(), () => nowMs)
+    );
+
+    const response = await request(app).post("/check").send({
+      key: "user:123"
+    });
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual({
+      allowed: true,
+      remaining: rateLimitDefaults.limit - 1,
+      retryAfterSec: rateLimitDefaults.windowSec,
+      resetAt: new Date(
+        nowMs + rateLimitDefaults.windowSec * 1000
+      ).toISOString()
     });
   });
 
