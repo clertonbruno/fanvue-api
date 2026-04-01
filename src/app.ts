@@ -1,13 +1,8 @@
 import express, { Express, NextFunction, Request, Response } from "express";
-import { InMemoryCounterRepository } from "./repositories/inMemoryCounterRepository";
 import { createRateLimitRouter } from "./routes/rateLimitRoutes";
 import { RateLimiterService } from "./services/rateLimiterService";
 
-export function createApp(
-  rateLimiterService: RateLimiterService = new RateLimiterService(
-    new InMemoryCounterRepository()
-  )
-): Express {
+export function createApp(rateLimiterService: RateLimiterService): Express {
   const app = express();
 
   app.use(express.json());
@@ -26,7 +21,11 @@ export function createApp(
         });
       }
 
-      return next(error);
+      console.error("Unhandled application error", error);
+
+      return response.status(500).json({
+        error: "Internal server error"
+      });
     }
   );
 

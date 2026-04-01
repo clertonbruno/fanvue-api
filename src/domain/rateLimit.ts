@@ -15,3 +15,18 @@ export type Counter = {
   count: number;
   windowStartMs: number;
 };
+
+export type FixedWindowCheckInput = {
+  bucketKey: string;
+  limit: number;
+  windowMs: number;
+  nowMs: number;
+};
+
+export type FixedWindowCheckResult = Counter & {
+  allowed: boolean;
+};
+
+export type CounterRepository = {
+  checkFixedWindow(input: FixedWindowCheckInput): Promise<FixedWindowCheckResult>;
+};

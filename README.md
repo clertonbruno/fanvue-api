@@ -1,12 +1,12 @@
 # Fixed-Window Rate Limiter API
 
-Small TypeScript + Express API with a single `POST /check` endpoint that evaluates a fixed-window rate limit in memory.
+Small TypeScript + Express API with a single `POST /check` endpoint that evaluates a fixed-window rate limit and stores counters in Redis.
 
 ## What It Does
 
 - Validates the request body with Zod.
 - Builds a bucket key from `key`, `limit`, and `windowSec`.
-- Tracks counters in a process-local `Map`.
+- Tracks counters in Redis so limits are shared outside a single process.
 - Returns whether the request is allowed, how many requests remain, and when the window resets.
 
 ## Run It
@@ -18,18 +18,30 @@ npm run dev
 
 The server starts on `http://localhost:3000`.
 
+Set `REDIS_URL` if Redis is not running on `redis://localhost:6379`.
+
 Run tests with:
 
 ```bash
 npm test
 ```
 
-## Run With Docker
+## Build The Image
 
 ```bash
 docker build -t fixed-window-rate-limiter-api .
-docker run --rm -p 3000:3000 fixed-window-rate-limiter-api
 ```
+
+## Run With Docker Compose
+
+```bash
+docker compose up --build
+```
+
+This starts:
+
+- the API on `http://localhost:3000`
+- a single Redis node with AOF enabled for persistence
 
 ## Example Request
 
@@ -57,20 +69,19 @@ Example response:
 ## Design Choices
 
 - Fixed-window implementation only, because that is the requested algorithm.
-- In-memory `Map` repository, because persistence and distribution are explicitly out of scope.
+- Redis repository, so rate-limit state is shared outside the Node process.
+- Redis updates are done with a Lua script so the read/update decision is atomic.
 - Small clock injection in the service, so tests stay deterministic without adding much abstraction.
 - Input bounds of `limit <= 1000` and `windowSec <= 86400` to reject obviously unreasonable payloads in a small interview exercise.
 
 ## Trade-Offs
 
-- State is lost on process restart.
-- Limits are enforced per process, not across multiple instances.
+- This uses a single Redis node, so it is still a single point of failure.
 - Fixed-window limiting is simple but can allow bursts at window boundaries.
-- The in-memory map grows with unique bucket keys and has no eviction policy.
+- Redis key expiry is tied to the window length, so idle buckets are cleaned up automatically.
 
 ## Production Evolution
 
-- Move counters to shared storage such as Redis for multi-instance enforcement.
-- Add TTL or cleanup for idle buckets.
+- Move to managed Redis or a replicated Redis deployment for higher availability.
 - Add metrics, structured logging, and request identifiers.
 - Consider a sliding-window or token-bucket algorithm if smoother limiting is needed.

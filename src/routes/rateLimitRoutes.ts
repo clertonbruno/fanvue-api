@@ -7,7 +7,7 @@ export function createRateLimitRouter(
 ): Router {
   const router = Router();
 
-  router.post("/check", (request, response) => {
+  router.post("/check", async (request, response, next) => {
     const parsedBody = rateLimitRequestSchema.safeParse(request.body);
 
     if (!parsedBody.success) {
@@ -17,9 +17,13 @@ export function createRateLimitRouter(
       });
     }
 
-    const result = rateLimiterService.checkRateLimit(parsedBody.data);
+    try {
+      const result = await rateLimiterService.checkRateLimit(parsedBody.data);
 
-    return response.json(result);
+      return response.json(result);
+    } catch (error) {
+      return next(error);
+    }
   });
 
   return router;

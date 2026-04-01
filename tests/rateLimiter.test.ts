@@ -12,14 +12,14 @@ const baseRequest: RateLimitRequest = {
 };
 
 describe("RateLimiterService", () => {
-  it("allows the first request", () => {
+  it("allows the first request", async () => {
     const nowMs = Date.parse("2026-04-01T18:20:00.000Z");
     const service = new RateLimiterService(
       new InMemoryCounterRepository(),
       () => nowMs
     );
 
-    const result = service.checkRateLimit(baseRequest);
+    const result = await service.checkRateLimit(baseRequest);
 
     expect(result).toEqual({
       allowed: true,
@@ -29,7 +29,7 @@ describe("RateLimiterService", () => {
     });
   });
 
-  it("allows requests until the limit is reached", () => {
+  it("allows requests until the limit is reached", async () => {
     const nowMs = Date.parse("2026-04-01T18:20:00.000Z");
     const service = new RateLimiterService(
       new InMemoryCounterRepository(),
@@ -37,17 +37,17 @@ describe("RateLimiterService", () => {
     );
 
     for (let attempt = 1; attempt < baseRequest.limit; attempt += 1) {
-      service.checkRateLimit(baseRequest);
+      await service.checkRateLimit(baseRequest);
     }
 
-    const result = service.checkRateLimit(baseRequest);
+    const result = await service.checkRateLimit(baseRequest);
 
     expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(0);
     expect(result.retryAfterSec).toBe(60);
   });
 
-  it("blocks once the limit is exceeded", () => {
+  it("blocks once the limit is exceeded", async () => {
     const nowMs = Date.parse("2026-04-01T18:20:00.000Z");
     const service = new RateLimiterService(
       new InMemoryCounterRepository(),
@@ -55,10 +55,10 @@ describe("RateLimiterService", () => {
     );
 
     for (let attempt = 0; attempt < baseRequest.limit; attempt += 1) {
-      service.checkRateLimit(baseRequest);
+      await service.checkRateLimit(baseRequest);
     }
 
-    const result = service.checkRateLimit(baseRequest);
+    const result = await service.checkRateLimit(baseRequest);
 
     expect(result).toEqual({
       allowed: false,
@@ -68,7 +68,7 @@ describe("RateLimiterService", () => {
     });
   });
 
-  it("resets after the window expires", () => {
+  it("resets after the window expires", async () => {
     let nowMs = Date.parse("2026-04-01T18:20:00.000Z");
     const service = new RateLimiterService(
       new InMemoryCounterRepository(),
@@ -76,12 +76,12 @@ describe("RateLimiterService", () => {
     );
 
     for (let attempt = 0; attempt < baseRequest.limit; attempt += 1) {
-      service.checkRateLimit(baseRequest);
+      await service.checkRateLimit(baseRequest);
     }
 
     nowMs += 60_000;
 
-    const result = service.checkRateLimit(baseRequest);
+    const result = await service.checkRateLimit(baseRequest);
 
     expect(result).toEqual({
       allowed: true,
@@ -111,7 +111,9 @@ describe("POST /check", () => {
   });
 
   it("returns 400 for invalid input", async () => {
-    const app = createApp();
+    const app = createApp(
+      new RateLimiterService(new InMemoryCounterRepository())
+    );
 
     const response = await request(app).post("/check").send({
       key: "",
