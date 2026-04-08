@@ -28,7 +28,7 @@ export class RateLimiterService {
       result.allowed,
       request.limit - result.count,
       windowEndMs,
-      nowMs
+      result.evaluatedAtMs
     );
   }
 

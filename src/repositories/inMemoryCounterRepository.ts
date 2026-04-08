@@ -24,7 +24,8 @@ export class InMemoryCounterRepository implements CounterRepository {
       return {
         allowed: true,
         count: counter.count,
-        windowStartMs: counter.windowStartMs
+        windowStartMs: counter.windowStartMs,
+        evaluatedAtMs: input.nowMs
       };
     }
 
@@ -41,7 +42,8 @@ export class InMemoryCounterRepository implements CounterRepository {
       return {
         allowed: true,
         count: counter.count,
-        windowStartMs: counter.windowStartMs
+        windowStartMs: counter.windowStartMs,
+        evaluatedAtMs: input.nowMs
       };
     }
 
@@ -56,14 +58,16 @@ export class InMemoryCounterRepository implements CounterRepository {
       return {
         allowed: true,
         count: counter.count,
-        windowStartMs: counter.windowStartMs
+        windowStartMs: counter.windowStartMs,
+        evaluatedAtMs: input.nowMs
       };
     }
 
     return {
       allowed: false,
       count: existingCounter.count,
-      windowStartMs: existingCounter.windowStartMs
+      windowStartMs: existingCounter.windowStartMs,
+      evaluatedAtMs: input.nowMs
     };
   }
 }

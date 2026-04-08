@@ -25,6 +25,7 @@ export type FixedWindowCheckInput = {
 
 export type FixedWindowCheckResult = Counter & {
   allowed: boolean;
+  evaluatedAtMs: number;
 };
 
 export type CounterRepository = {
