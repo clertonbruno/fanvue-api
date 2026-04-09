@@ -1,8 +1,8 @@
 import express, { Express, NextFunction, Request, Response } from "express";
-import { createRateLimitRouter } from "./routes/rateLimitRoutes";
-import { RateLimiterService } from "./services/rateLimiterService";
+import { RateLimiterPort } from "../../ports/rateLimiterPort";
+import { createRateLimitRouter } from "./rateLimitRoutes";
 
-export function createApp(rateLimiterService: RateLimiterService): Express {
+export function createApp(rateLimiterService: RateLimiterPort): Express {
   const app = express();
 
   app.use(express.json());

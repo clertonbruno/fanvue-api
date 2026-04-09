@@ -27,7 +27,3 @@ export type FixedWindowCheckResult = Counter & {
   allowed: boolean;
   evaluatedAtMs: number;
 };
-
-export type CounterRepository = {
-  checkFixedWindow(input: FixedWindowCheckInput): Promise<FixedWindowCheckResult>;
-};

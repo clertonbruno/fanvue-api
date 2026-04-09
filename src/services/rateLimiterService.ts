@@ -1,14 +1,15 @@
 import {
-  CounterRepository,
   RateLimitRequest,
   RateLimitResponse
 } from "../domain/rateLimit";
+import { CounterRepositoryPort } from "../ports/counterRepositoryPort";
+import { RateLimiterPort } from "../ports/rateLimiterPort";
 
 type Clock = () => number;
 
-export class RateLimiterService {
+export class RateLimiterService implements RateLimiterPort {
   constructor(
-    private readonly counterRepository: CounterRepository,
+    private readonly counterRepository: CounterRepositoryPort,
     private readonly now: Clock = () => Date.now()
   ) {}
 

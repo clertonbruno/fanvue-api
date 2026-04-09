@@ -1,8 +1,8 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
-import { createApp } from "../src/app";
+import { createApp } from "../src/adapters/http/app";
 import { RateLimitRequest } from "../src/domain/rateLimit";
-import { InMemoryCounterRepository } from "../src/repositories/inMemoryCounterRepository";
+import { InMemoryCounterRepository } from "../src/adapters/repositories/inMemoryCounterRepository";
 import { rateLimitDefaults } from "../src/schemas/rateLimitSchemas";
 import { RateLimiterService } from "../src/services/rateLimiterService";
 

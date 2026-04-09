@@ -1,11 +1,11 @@
 import {
   Counter,
-  CounterRepository,
   FixedWindowCheckInput,
   FixedWindowCheckResult
-} from "../domain/rateLimit";
+} from "../../domain/rateLimit";
+import { CounterRepositoryPort } from "../../ports/counterRepositoryPort";
 
-export class InMemoryCounterRepository implements CounterRepository {
+export class InMemoryCounterRepository implements CounterRepositoryPort {
   private readonly counters = new Map<string, Counter>();
 
   async checkFixedWindow(

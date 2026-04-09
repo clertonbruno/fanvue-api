@@ -1,9 +1,9 @@
 import { createClient } from "redis";
 import {
-  CounterRepository,
   FixedWindowCheckInput,
   FixedWindowCheckResult
-} from "../domain/rateLimit";
+} from "../../domain/rateLimit";
+import { CounterRepositoryPort } from "../../ports/counterRepositoryPort";
 
 type RateLimiterRedisClient = ReturnType<typeof createClient>;
 
@@ -40,7 +40,7 @@ end
 return {0, count, windowStartMs, nowMs}
 `;
 
-export class RedisCounterRepository implements CounterRepository {
+export class RedisCounterRepository implements CounterRepositoryPort {
   constructor(private readonly client: RateLimiterRedisClient) {}
 
   async checkFixedWindow(

@@ -1,6 +1,6 @@
-import { createApp } from "./app";
-import { RedisCounterRepository } from "./repositories/redisCounterRepository";
-import { createRateLimiterRedisClient } from "./redis/createRateLimiterRedisClient";
+import { createApp } from "./adapters/http/app";
+import { RedisCounterRepository } from "./adapters/repositories/redisCounterRepository";
+import { createRateLimiterRedisClient } from "./adapters/repositories/redis/createRateLimiterRedisClient";
 import { RateLimiterService } from "./services/rateLimiterService";
 
 async function startServer(): Promise<void> {

@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { rateLimitRequestSchema } from "../schemas/rateLimitSchemas";
-import { RateLimiterService } from "../services/rateLimiterService";
+import { RateLimiterPort } from "../../ports/rateLimiterPort";
+import { rateLimitRequestSchema } from "../../schemas/rateLimitSchemas";
 
 export function createRateLimitRouter(
-  rateLimiterService: RateLimiterService
+  rateLimiterService: RateLimiterPort
 ): Router {
   const router = Router();
 
